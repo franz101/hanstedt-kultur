@@ -98,9 +98,12 @@
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        // UPDATED: Simplified the view options for a cleaner look
+        right: 'timeGridWeek,dayGridMonth,listWeek'
       },
-      initialView: 'dayGridMonth',
+      
+      // UPDATED: The calendar will now load in this view by default
+      initialView: 'timeGridWeek',
       
       // RESTORED: Your original API key to make events appear
       googleCalendarApiKey: 'AIzaSyBoRRkydA7yrpvC6VKjyJLgDxI1TiWTWU0',
@@ -110,7 +113,7 @@
       },
       eventDidMount: function(info) {
         if (info.event.extendedProps.description) {
-          info.el.setAttribute('title', info.event.extendedProps.description);
+          info.el.setAttribute('title', info.event.extended_props.description);
         }
       },
       eventDisplay: 'block',
