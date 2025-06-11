@@ -3,185 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Community Calendar</title>
-<link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+<title>Our Accessible Community Calendar</title>
 <style>
-:root {
---primary-color: #005a9c;
---secondary-color: #fdb813;
---text-color: #333333;
---background-color: #ffffff;
---border-color: #dddddd;
---holiday-color: #d9534f;
---saturday-color: #005a9c;
---today-color: #fdb813;
---font-size-large: 1.2rem;
---font-size-regular: 1rem;
-}
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        background-color: var(--background-color);
-        color: var(--text-color);
-        line-height: 1.5;
-    }
+  body {
+    margin: 20px;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.6;
+    background-color: #f8f9fa;
+    color: #212529;
+  }
 
-    #calendar {
-        width: 100%;
-        height: 80vh;
-    }
+  #calendar-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
 
-    /* Senior-friendly Toast UI Calendar Theme */
-    .toastui-calendar-layout {
-        font-size: var(--font-size-regular);
-    }
+  /* Style for the calendar header */
+  .fc-header-toolbar {
+    padding-bottom: 1.5rem;
+  }
 
-    .toastui-calendar-day-name {
-        font-size: var(--font-size-large);
-        font-weight: bold;
-        color: var(--primary-color);
-    }
+  .fc-toolbar-title {
+    font-size: 2.25rem !important; /* Larger title font */
+    font-weight: 600;
+  }
 
-    .toastui-calendar-day-name-sat {
-        color: var(--saturday-color);
-    }
+  /* Style for the calendar buttons */
+  .fc-button {
+    font-size: 1.1rem !important; /* Larger button text */
+    padding: 0.75em 1.5em !important;
+    border-radius: 8px !important;
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #ffffff !important;
+    transition: background-color 0.2s;
+  }
 
-    .toastui-calendar-day-name-sun .toastui-calendar-day-name-decorator {
-        color: var(--holiday-color);
-    }
+  .fc-button:hover, .fc-button:focus {
+    background-color: #0056b3 !important;
+  }
 
-    .toastui-calendar-grid-cell-date {
-        font-size: var(--font-size-large);
-    }
+  .fc-button:focus {
+    outline: 3px solid #0056b3;
+    outline-offset: 2px;
+  }
 
-    .toastui-calendar-grid-cell-today .toastui-calendar-grid-cell-date {
-        background-color: var(--today-color);
-        color: white;
-        border-radius: 50%;
-        width: 2.5rem;
-        height: 2.5rem;
-        line-height: 2.5rem;
-        text-align: center;
-    }
 
-    .toastui-calendar-event {
-        font-size: var(--font-size-regular);
-    }
+  /* Style for the calendar view */
+  .fc-daygrid-day-number {
+    font-size: 1.25rem; /* Larger day numbers */
+    padding: 0.5em;
+  }
 
-    .toastui-calendar-month-more {
-        font-size: var(--font-size-regular);
-        background: var(--primary-color);
-        color: white;
-    }
+  .fc-event {
+    font-size: 1rem !important; /* Larger event text */
+    padding: 0.5em;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 
-    .toastui-calendar-template-monthGridHeader {
-         font-size: 1.1em !important;
-    }
+  /* List View Specific Styles */
+  .fc-list-event-title {
+    font-weight: bold;
+  }
 
-    .toastui-calendar-weekday-schedule-title {
-        font-weight: bold;
-        font-size: 1.1em;
-    }
+  .fc-list-item:hover {
+      background-color: #f1f1f1;
+  }
+
 
 </style>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.11/index.global.min.js'></script>
+<script>
 
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    // For responsive view switching
+    const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,listWeek'
+      },
+      initialView: mobileMediaQuery.matches ? 'listWeek' : 'dayGridMonth',
+      googleCalendarApiKey: 'YOUR_API_KEY', // It's recommended to restrict your API key
+      events: {
+        googleCalendarId: '79ha16177qekdu91os9ptcvlrc@group.calendar.google.com',
+      },
+      eventDidMount: function(info) {
+        // Tooltip on hover for all views
+        if (info.event.extendedProps.description) {
+          info.el.setAttribute('title', info.event.extendedProps.description);
+        }
+
+        // Make event focusable for keyboard navigation
+        info.el.setAttribute('tabindex', '0');
+
+        // Add keyboard interaction to open event details (if any)
+        info.el.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                // Add logic to display event details, e.g., in a modal
+                alert('Event: ' + info.event.title + '\nDescription: ' + (info.event.extendedProps.description || 'No description'));
+            }
+        });
+      },
+      eventDisplay: 'block',
+      eventColor: '#007bff',
+      eventTimeFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        meridiem: 'short'
+      },
+      // Accessibility enhancements
+      navLinks: true, // makes day numbers clickable
+      handleWindowResize: true,
+      windowResize: function(view) {
+        if (mobileMediaQuery.matches) {
+            calendar.changeView('listWeek');
+        } else {
+            calendar.changeView('dayGridMonth');
+        }
+      }
+    });
+
+    calendar.render();
+  });
+
+</script>
 </head>
 <body>
-<h1 style="text-align:center; color: var(--primary-color);">Our Community Calendar</h1>
-<div id="calendar"></div>
 
-<script src="[https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js](https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js)"></script>
-<script src="[https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js](https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js)"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const cal = new tui.Calendar('#calendar', {
-            defaultView: 'month',
-            useCreationPopup: false,
-            useDetailPopup: true,
-            isReadOnly: true,
-            theme: {
-                common: {
-                    border: `1px solid ${getComputedStyle(document.documentElement).getPropertyValue('--border-color')}`,
-                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--background-color'),
-                    holiday: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--holiday-color'),
-                    },
-                    saturday: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--saturday-color'),
-                    },
-                    today: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-color'),
-                    },
-                },
-                 month: {
-                    dayname: {
-                        borderLeft: 'none',
-                        backgroundColor: 'inherit',
-                    },
-                    gridCell: {
-                       header: {
-                         color:  getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
-                       }
-                    }
-                },
-            },
-            template: {
-                monthGridHeader(model) {
-                    const date = new Date(model.date);
-                    const day = date.getDay();
-                    let classNames = 'toastui-calendar-day-name';
-                    if (day === 0) {
-                        classNames += ' toastui-calendar-day-name-sun';
-                    } else if (day === 6) {
-                        classNames += ' toastui-calendar-day-name-sat';
-                    }
-                    return `<span class="${classNames}">${model.day}</span>`;
-                },
-            },
-        });
-
-        // A CORS proxy is needed to fetch the iCal feed from a different domain in the browser.
-        // This example uses a free, public proxy. For production use, a self-hosted proxy is recommended.
-        const proxyUrl = '[https://cors-anywhere.herokuapp.com/](https://cors-anywhere.herokuapp.com/)';
-        const icalUrl = '[https://calendar.google.com/calendar/ical/79ha16177qekdu91os9ptcvlrc%40group.calendar.google.com/public/basic.ics](https://calendar.google.com/calendar/ical/79ha16177qekdu91os9ptcvlrc%40group.calendar.google.com/public/basic.ics)';
-        const apiKey = 'AIzaSyBoRRkydA7yrpvC6VKjyJLgDxI1TiWTWU0'; // Not directly used for iCal fetching, but included as requested.
-
-        fetch(proxyUrl + icalUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(icalData => {
-                const jcalData = ICAL.parse(icalData);
-                const comp = new ICAL.Component(jcalData);
-                const vevents = comp.getAllSubcomponents('vevent');
-
-                const events = vevents.map(vevent => {
-                    const event = new ICAL.Event(vevent);
-                    const isAllDay = event.startDate.isDate;
-
-                    return {
-                        id: event.uid,
-                        calendarId: '1',
-                        title: event.summary,
-                        body: event.description,
-                        start: event.startDate.toJSDate(),
-                        end: event.endDate.toJSDate(),
-                        isAllday: isAllDay,
-                        category: isAllDay ? 'allday' : 'time',
-                        location: event.location,
-                    };
-                });
-
-                cal.createEvents(events);
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-                alert('Due to a technical issue, the calendar events could not be loaded. Please try again later.');
-            });
-    });
-</script>
+  <div id='calendar-container'>
+    <div id='calendar'></div>
+  </div>
 
 </body>
 </html>
