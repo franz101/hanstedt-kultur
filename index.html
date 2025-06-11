@@ -38,31 +38,42 @@
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
   }
 
-  /* --- FullCalendar Specific Styles (Restored from your original) --- */
+  /* --- FullCalendar General Styles --- */
   .fc-toolbar-title {
     font-size: 2em !important;
   }
 
-  /* Kept from your original for larger buttons */
   .fc-button {
     font-size: 1.2em !important;
     padding: 10px 20px !important;
   }
 
-  /* Kept from your original for larger day numbers */
   .fc-daygrid-day-number {
     font-size: 1.5em;
     padding: 10px;
   }
 
-  /* Kept from your original for larger event text */
-  .fc-event {
-    font-size: 1.1em !important;
-    padding: 5px;
-    border-radius: 5px;
+  /* --- Custom Event Styling (NEW) --- */
+  /* This ensures the event content stacks vertically */
+  .fc-event-main {
+    padding: 4px 6px; /* Add some internal padding */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align text to the left */
   }
 
-  /* --- Mobile-Friendly Adjustments (Media Query) --- */
+  .fc-event-time {
+    font-weight: bold;
+    font-size: 0.9em;
+  }
+  
+  .fc-event-title {
+    font-size: 1em;
+    white-space: normal; /* Allow title to wrap to new lines */
+    word-wrap: break-word;
+  }
+
+  /* --- Mobile-Friendly Adjustments --- */
   @media (max-width: 768px) {
     .page-header h1 {
       font-size: 1.8em;
@@ -101,19 +112,27 @@
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
       },
       initialView: 'dayGridMonth',
-      
-      // RESTORED: Your original API key to make events appear
       googleCalendarApiKey: 'AIzaSyBoRRkydA7yrpvC6VKjyJLgDxI1TiWTWU0',
-      
       events: {
         googleCalendarId: '79ha16177qekdu91os9ptcvlrc@group.calendar.google.com',
       },
+      
+      // NEW: This function customizes the HTML for each event
+      eventContent: function(arg) {
+        // Check if there is time text (for all-day events there isn't)
+        let timeHtml = arg.timeText ? `<div class="fc-event-time">${arg.timeText}</div>` : '';
+        let titleHtml = `<div class="fc-event-title">${arg.event.title}</div>`;
+
+        return {
+          html: timeHtml + titleHtml
+        };
+      },
+
       eventDidMount: function(info) {
         if (info.event.extendedProps.description) {
           info.el.setAttribute('title', info.event.extendedProps.description);
         }
       },
-      eventDisplay: 'block',
       eventColor: '#3788d8',
       eventTimeFormat: {
         hour: 'numeric',
