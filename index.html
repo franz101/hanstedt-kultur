@@ -1,161 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Community Calendar</title>
-<style>
-body {
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-background-color: #f0f2f5;
-color: #1c1e21;
-line-height: 1.6;
-margin: 0;
-padding: 20px;
-}
-    #calendar-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background-color: #ffffff;
-        border: 1px solid #dddfe2;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Community Calendar</title>
+  <!-- FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <style>
+    /* Simple, high‑contrast styles for seniors */
+    body {
+      font-family: Arial, sans-serif;
+      background:#f8f9fa;
+      margin:0;
+      padding:0;
     }
-
-    h1 {
-        font-size: 2.5rem; /* Larger heading */
-        color: #1877f2;
-        text-align: center;
-        margin-bottom: 20px;
+    #calendar {
+      max-width: 1000px;
+      margin: 40px auto;
+      font-size: 1.25em; /* larger base font */
     }
-
-    #event-list {
-        list-style-type: none;
-        padding: 0;
+    .fc-toolbar-title {
+      font-size: 1.8em !important; /* bigger month title */
     }
-
-    .event-item {
-        border-bottom: 1px solid #dddfe2;
-        padding: 20px 10px;
-        margin-bottom: 15px;
+    .fc-button {
+      font-size: 1.2em !important; /* larger buttons */
+      padding: 0.5em 0.9em !important;
     }
-
-    .event-item:last-child {
-        border-bottom: none;
-    }
-
-    .event-summary {
-        font-size: 1.8rem; /* Significantly larger event titles */
-        font-weight: bold;
-        color: #1c1e21;
-    }
-
-    .event-time {
-        font-size: 1.4rem; /* Larger and clearer dates/times */
-        color: #606770;
-        margin-top: 8px;
-    }
-
-    .event-description {
-        font-size: 1.2rem; /* Larger description text */
-        margin-top: 10px;
-        color: #333;
-    }
-
-    #loading, #error {
-        text-align: center;
-        font-size: 1.2rem;
-        padding: 20px;
-    }
-</style>
-
+    .fc-daygrid-day-number { font-size: 1.2em; }
+    .fc-event { font-size: 1.1em; }
+    /* Responsive tweak for smaller screens */
+    @media (max-width: 600px) { #calendar { font-size: 1em; } }
+  </style>
 </head>
 <body>
-<div id="calendar-container">
-    <h1>Our Community Calendar</h1>
-    <div id="loading">Loading upcoming events...</div>
-    <div id="error" style="display: none;"></div>
-    <ul id="event-list"></ul>
-</div>
+  <div id='calendar'></div>  <!-- FullCalendar JS (with Google Calendar plugin) -->  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarEl = document.getElementById('calendar');
 
-<script>
-    const apiKey = "AIzaSyBoRRkydA7yrpvC6VKjyJLgDxI1TiWTWU0";
-    const calendarId = "79ha16177qekdu91os9ptcvlrc@group.calendar.google.com";
-    const calendarUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${new Date().toISOString()}&singleEvents=true&orderBy=startTime`;
-
-    fetch(calendarUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById('loading').style.display = 'none';
-            const eventList = document.getElementById('event-list');
-
-            if (data.items && data.items.length > 0) {
-                data.items.forEach(event => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'event-item';
-
-                    const summary = document.createElement('div');
-                    summary.className = 'event-summary';
-                    summary.textContent = event.summary;
-
-                    const time = document.createElement('div');
-                    time.className = 'event-time';
-                    time.textContent = formatEventTime(event.start, event.end);
-
-                    listItem.appendChild(summary);
-                    listItem.appendChild(time);
-
-                    if (event.description) {
-                        const description = document.createElement('div');
-                        description.className = 'event-description';
-                        description.textContent = event.description;
-                        listItem.appendChild(description);
-                    }
-
-                    eventList.appendChild(listItem);
-                });
-            } else {
-                eventList.innerHTML = '<li class="event-item">No upcoming events found.</li>';
-            }
-        })
-        .catch(error => {
-            document.getElementById('loading').style.display = 'none';
-            const errorDiv = document.getElementById('error');
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = 'Sorry, we were unable to load the calendar at this time. Please try again later.';
-            console.error('Error fetching calendar events:', error);
-        });
-
-    function formatEventTime(start, end) {
-        const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const optionsTime = { hour: 'numeric', minute: 'numeric', hour12: true };
-
-        const startDate = new Date(start.dateTime || start.date);
-        const endDate = new Date(end.dateTime || end.date);
-
-        let dateString = startDate.toLocaleDateString('en-US', optionsDate);
-
-        if (start.dateTime) { // This is an event with a specific time
-            const startTimeString = startDate.toLocaleTimeString('en-US', optionsTime);
-            const endTimeString = endDate.toLocaleTimeString('en-US', optionsTime);
-            return `${dateString} from ${startTimeString} to ${endTimeString}`;
-        } else { // This is an all-day event
-            // Check if the event spans multiple days
-            if (endDate.getTime() > startDate.getTime() + (24 * 60 * 60 * 1000 - 1)) {
-                 const endDateFormatted = new Date(endDate.getTime() - (24 * 60 * 60 * 1000));
-                 const endDateString = endDateFormatted.toLocaleDateString('en-US', optionsDate);
-                 return `From ${dateString} to ${endDateString}`;
-            }
-            return `${dateString} (All Day)`;
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,listMonth'
+        },
+        buttonText: {
+          today: 'Today',
+          month: 'Month',
+          list: 'Agenda'
+        },
+        height: 'auto',
+        googleCalendarApiKey: 'AIzaSyBoRRkydA7yrpvC6VKjyJLgDxI1TiWTWU0',
+        events: {
+          googleCalendarId: '79ha16177qekdu91os9ptcvlrc@group.calendar.google.com',
+          className: 'gcal-event'
+        },
+        eventClick: function (info) {
+          info.jsEvent.preventDefault(); // stay on page
+          if (info.event.url) {
+            window.open(info.event.url, '_blank', 'noopener');
+          }
+        },
+        eventDidMount: function (info) {
+          // improve color contrast of events
+          info.el.style.backgroundColor = '#1967d2';
+          info.el.style.color = '#fff';
+          info.el.style.borderRadius = '6px';
+          info.el.style.border = 'none';
         }
-    }
-</script>
+      });
 
-</body>
+      calendar.render();
+    });
+  </script></body>
 </html>
