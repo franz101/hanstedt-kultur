@@ -5,54 +5,98 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Our Community Calendar</title>
 <style>
+  /* --- Global Styles --- */
   body {
-    margin: 40px 10px;
+    /* Removed horizontal margins to allow content to fill the screen width */
+    margin: 0;
     padding: 0;
     font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-    font-size: 18px; /* Increased base font size for better readability */
+    background-color: #f4f4f8; /* A light background color for contrast */
+  }
+
+  /* --- Page Header --- */
+  .page-header {
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: 2.5em;
+  }
+
+  /* --- Calendar Container --- */
+  #calendar-container {
+    /* Padding provides space on larger screens */
+    padding: 20px;
   }
 
   #calendar {
-    max-width: 1100px;
-    margin: 0 auto;
+    /*
+      - Removed max-width and margin: 0 auto to allow the calendar to be full-width.
+      - The calendar will now expand to the width of its container.
+    */
     background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
   }
 
-  /* Style for the calendar header */
-  .fc-header-toolbar {
-    padding-bottom: 20px;
-  }
-
+  /* --- FullCalendar Specific Styles --- */
   .fc-toolbar-title {
-    font-size: 2em !important; /* Larger title font */
+    font-size: 2em !important;
   }
 
-  /* Style for the calendar buttons */
   .fc-button {
-    font-size: 1.2em !important; /* Larger button text */
-    padding: 10px 20px !important;
+    font-size: 1em !important; /* Adjusted for better fit on mobile */
+    padding: 8px 16px !important;
   }
 
-  /* Style for the calendar view */
   .fc-daygrid-day-number {
-    font-size: 1.5em; /* Larger day numbers */
-    padding: 10px;
+    font-size: 1.2em;
+    padding: 8px;
   }
 
   .fc-event {
-    font-size: 1.1em !important; /* Larger event text */
-    padding: 5px;
-    border-radius: 5px;
+    font-size: 1em !important;
+  }
+
+  /* --- Mobile-Friendly Adjustments (Media Query) --- */
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 1.8em; /* Smaller title on mobile */
+    }
+
+    /* Reduce padding on the container and calendar for smaller screens to maximize space */
+    #calendar-container {
+      padding: 10px;
+    }
+    #calendar {
+      padding: 10px;
+    }
+
+    .fc-toolbar-title {
+      font-size: 1.5em !important; /* Smaller calendar title on mobile */
+    }
+
+    /* Adjust toolbar for very small screens to prevent overflow */
+    .fc-header-toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Adds space between the rows */
+    }
+
+    .fc-header-toolbar .fc-toolbar-chunk {
+        text-align: center;
+    }
   }
 
 </style>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.11/index.global.min.js'></script>
 <script>
-
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
 
@@ -63,7 +107,7 @@
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
       },
       initialView: 'dayGridMonth',
-      googleCalendarApiKey: 'AIzaSyBoRRkydA7yrpvC6VKjyJLgDxI1TiWTWU0',
+      googleCalendarApiKey: 'YOUR_API_KEY_HERE', // IMPORTANT: Replace with your actual API key
       events: {
         googleCalendarId: '79ha16177qekdu91os9ptcvlrc@group.calendar.google.com',
       },
@@ -73,9 +117,9 @@
           info.el.setAttribute('title', info.event.extendedProps.description);
         }
       },
-      eventDisplay: 'block', // Makes events appear as solid blocks
-      eventColor: '#3788d8', // A nice blue color for events
-      eventTimeFormat: { // 12-hour format for time
+      eventDisplay: 'block',
+      eventColor: '#3788d8',
+      eventTimeFormat: {
         hour: 'numeric',
         minute: '2-digit',
         meridiem: 'short'
@@ -84,12 +128,17 @@
 
     calendar.render();
   });
-
 </script>
 </head>
 <body>
 
-  <div id='calendar'></div>
+  <header class="page-header">
+    <h1>Our Community Calendar</h1>
+  </header>
+
+  <main id="calendar-container">
+    <div id='calendar'></div>
+  </main>
 
 </body>
 </html>
