@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>My Calendar</title>
+
+  <!-- FullCalendar core + icalendar plugin (v6.x) -->
+  <link  href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.11/index.global.min.js"></script>
+
+  <!-- Optional: a few CSS-variable tweaks for a cleaner look -->
+  <style>
+    :root {
+      --fc-border-color: transparent;        /* hide cell borders          */
+      --fc-today-bg-color: #fef3c7;          /* subtle “today” highlight    */
+      --fc-event-bg-color: #2563eb26;        /* translucent event blocks    */
+      --fc-event-border-color: #2563eb66;
+      --fc-event-text-color: #1e3a8a;
+      font-family: system-ui, sans-serif;
+    }
+
+    body { margin: 0; padding: 2rem; background:#fff; }
+    #calendar { max-width: 900px; margin: auto; }
+  </style>
+</head>
+<body>
+  <div id="calendar"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        initialView: 'dayGridMonth',        // default grid
+        aspectRatio: 1.35,                  // responsive height
+        timeZone: 'Europe/Berlin',          // display zone
+        headerToolbar: {                    // top bar controls
+          left:   'prev,next today',
+          center: 'title',
+          right:  'dayGridMonth,timeGridWeek,listWeek'
+        },
+        events: {
+          url:  'https://calendar.google.com/calendar/ical/79ha16177qekdu91os9ptcvlrc%40group.calendar.google.com/public/basic.ics',
+          format: 'ics'
+        }
+      });
+
+      calendar.render();
+    });
+  </script>
+</body>
+</html>
